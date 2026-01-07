@@ -2,3 +2,5 @@ migrations
 *.bak
 *.old
 *.pyc
+debug.log
+local_settings.py
