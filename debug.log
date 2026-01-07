@@ -1,0 +1,45 @@
+save_form called
+save_form called
+Form errors: {"first_name": [{"message": "Este campo es obligatorio.", "code": "required"}], "last_name": [{"message": "Este campo es obligatorio.", "code": "required"}], "email": [{"message": "Este campo es obligatorio.", "code": "required"}], "incident_date": [{"message": "Este campo es obligatorio.", "code": "required"}], "location": [{"message": "Este campo es obligatorio.", "code": "required"}], "incident_time": [{"message": "Este campo es obligatorio.", "code": "required"}], "incident_description": [{"message": "Este campo es obligatorio.", "code": "required"}]}
+save_form called
+Form errors: {"email": [{"message": "Este campo es obligatorio.", "code": "required"}]}
+save_form called
+Error in save_form: column "uuid" of relation "form_incidentform" does not exist
+LINE 1: ...O "form_incidentform" ("first_name", "last_name", "uuid", "e...
+                                                             ^
+save_form called
+save_form called
+save_form called
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 167: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 60: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 171: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 170: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 170: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 60: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 171: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 60: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'TypeError'> in views.py at line 171: exceptions must derive from BaseException
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 60: 'IncidentForm' object has no attribute 'date'
+WARNING: EXCEPTION <class 'TypeError'> in views.py at line 171: exceptions must derive from BaseException
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 71: 'IncidentForm' object has no attribute 'description'
+WARNING: EXCEPTION <class 'TypeError'> in views.py at line 171: exceptions must derive from BaseException
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 121: 'bytearray' object has no attribute 'encode'
+WARNING: EXCEPTION <class 'TypeError'> in views.py at line 172: exceptions must derive from BaseException
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 123: 'bytearray' object has no attribute 'encode'
+WARNING: EXCEPTION <class 'TypeError'> in views.py at line 174: exceptions must derive from BaseException
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 123: 'bytearray' object has no attribute 'encode'
+WARNING: EXCEPTION <class 'TypeError'> in views.py at line 178: exceptions must derive from BaseException
+WARNING: EXCEPTION <class 'AttributeError'> in views.py at line 123: 'bytearray' object has no attribute 'encode'
+WARNING: EXCEPTION <class 'TypeError'> in views.py at line 178: exceptions must derive from BaseException
+save_form called
+save_form called
+save_form called
+WARNING: EXCEPTION <class 'smtplib.SMTPAuthenticationError'> in views.py at line 181: (535, b'5.7.1 Authentication failed')
+save_form called
+WARNING: EXCEPTION <class 'smtplib.SMTPAuthenticationError'> in views.py at line 181: (535, b'5.7.1 Authentication failed')
+save_form called
+save_form called
+save_form called
+save_form called
+save_form called
+save_form called

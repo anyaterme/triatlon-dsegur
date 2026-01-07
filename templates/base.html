@@ -1,0 +1,22 @@
+{% load static %}
+<!doctype html>
+<html lang="es" class="h-full">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Formulario de Incidentes - Islas Canarias</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <style>@view-transition { navigation: auto; }</style>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="{% static 'js/shidix-ui.js' %}" defer></script>
+    </head>
+    <body class="h-full">
+        <div class="w-full h-full canary-gradient overflow-auto">
+            <div class="min-h-full flex items-center justify-center p-6">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </body>
+</html>

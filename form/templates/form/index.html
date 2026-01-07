@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class="form-container w-full max-w-5xl rounded-2xl shadow-2xl p-8 my-6">
+      <div class="text-center mb-8">
+        <table class="w-full h-full">
+          <tr>
+              <td class="align-top p-4">
+              <img src="https://triatlon.dsegur.com/static/img/logo_left.png" class="h-16 mx-auto mb-4"> 
+              </td>
+              <td>
+                <br><br>
+                <h1 id="formTitle" class="text-3xl font-bold mb-2" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Registro de Incidentes y Lesiones</h1>
+                <p class="text-gray-600">Completa todos los campos del formulario</p>
+              </div>
+
+                </td>
+
+              <td class="align-top p-4">
+              <img src="https://triatlon.dsegur.com/static/img/logo_right.png" class="h-16 mx-auto mb-4">
+              </td>
+          </tr>
+        </table>
+      </div>
+      <div id="successMessage" class="hidden success-message mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded">
+        <p class="text-green-700 font-medium">✓ Registro enviado correctamente</p>
+
+      </div>
+      <form id="incidentForm" method="POST" action="{% url 'form:save-form' %}">
+        {% csrf_token %}
+        <p class="font-semibold text-lg mb-4">Datos del lesionado</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div>
+            <label for="first_name" class="block text-sm font-semibold text-gray-700 mb-2">Nombre *</label>
+            <input type="text" id="first_name" name="first_name" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu nombre">
+          </div>
+          <div>
+            <label for="last_name" class="block text-sm font-semibold text-gray-700 mb-2">Apellidos *</label>
+            <input type="text" id="last_name" name="last_name" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tus apellidos">
+          </div>
+          <div >
+            <label for="birth_date" class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Nacimiento *</label>
+            <input type="date" id="birth_date" name="birth_date" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all">
+          </div>
+          <div>
+            <label for="nif" class="block text-sm font-semibold text-gray-700 mb-2">DNI *</label>
+            <input type="text" id="nif" name="nif" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu DNI">
+          </div>
+        
+          <div>
+            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+            <input type="email" id="email" name="email" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu correo electrónico">
+          </div>
+          <div >
+            <label for="phone_number" class="block text-sm font-semibold text-gray-700 mb-2">Teléfono *</label>
+            <input type="text" id="phone_number" name="phone_number" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu número de teléfono">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <!-- Domicilo (2 colls), localidad, provincia -->
+          <div class="col-span-2">
+            <label for="domicilio" class="block text-sm font-semibold text-gray-700 mb-2">Domicilio *</label>
+            <input type="text" id="domicilio" name="domicilio" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu domicilio">
+          </div>
+          <div>
+            <label for="localidad" class="block text-sm font-semibold text-gray-700 mb-2">Localidad *</label>
+            <input type="text" id="localidad" name="localidad" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu localidad">
+          </div>
+          <div>
+            <label for="provincia" class="block text-sm font-semibold text-gray-700 mb-2">Provincia *</label>
+            <input type="text" id="provincia" name="provincia" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu provincia">
+          </div>
+        </div>
+        <p class="font-semibold text-lg mb-4">Detalles del accidente</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="incident_date" class="block text-sm font-semibold text-gray-700 mb-2">Fecha *</label>
+            <input type="date" id="incident_date" name="incident_date" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all">
+          </div>
+          <div>
+            <label for="incident_time" class="block text-sm font-semibold text-gray-700 mb-2">Hora *</label>
+            <input type="time" id="incident_time" name="incident_time" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all">
+          </div>
+        </div>
+        <div class="space-y-6 mb-6">
+
+          <div>
+            <label for="location" class="block text-sm font-semibold text-gray-700 mb-2">Lugar *</label>
+            <textarea id="location" name="location" required rows="3" class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all resize-none" placeholder="Describe el lugar donde ocurrió el incidente"></textarea>
+          </div>
+          <div>
+            <label for="incident_description" class="block text-sm font-semibold text-gray-700 mb-2">Actividad deportiva *</label>
+            <textarea id="incident_description" name="incident_description" required rows="4" class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all resize-none" placeholder="¿Qué actividad deportiva estabas realizando?"></textarea>
+          </div>
+          <div>
+            <label for="injuries_sustained" class="block text-sm font-semibold text-gray-700 mb-2">Descripción detallada del accidente : Zonas afectadas, mecanismo de lesión, etc.*</label>
+            <textarea id="injuries_sustained" name="injuries_sustained" required rows="4" class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all resize-none" placeholder="Describe la lesión o afección"></textarea>
+          </div>
+          <div>
+            <label for="medical_center_visited" class="block text-sm font-semibold text-gray-700 mb-2">Centro al que se va a acudir *</label>
+            <textarea id="medical_center_visited" name="medical_center_visited" required rows="3" class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all resize-none" placeholder="Indica el centro médico o de atención"></textarea>
+          </div>
+          <!-- Requiere Parte ? -->
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+
+          <div>
+            <label for="parte_required" class="block text-sm font-semibold text-gray-700 mb-2">¿Requiere Parte ? *</label>
+            <select id="parte_required" name="parte_required" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all">
+              <option value="" disabled selected>Selecciona una opción</option>
+              <option value="True" selected>Sí</option>
+              <option value="False">No</option>
+            </select>
+          </div>
+          <div>
+            <label for="talon_required" class="block text-sm font-semibold text-gray-700 mb-2">¿Requiere Talón de Pago ? *</label>
+            <select id="talon_required" name="talon_required" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all">
+              <option value="" disabled selected>Selecciona una opción</option>
+              <option value="True">Sí</option>
+              <option value="False" selected>No</option>
+            </select>
+          </div>
+        </div>
+        <!-- Check de consentimiento -->
+        <div class="mb-6">
+          <label class="inline-flex items-center">
+            <input type="checkbox" id="consent_checkbox" required class="form-checkbox h-5 w-5 text-blue-600">
+            <span class="ml-2 text-sm text-gray-700">He leído y acepto la <a href="#" id="privacy_policy_link" class="text-blue-600 underline">política de privacidad</a> *</span>
+          </label>
+        </div>
+        <span class="hidden" id="privacy_policy_content">
+        <p class="font-semibold text-xs mb-4 text-justify">
+        Se le informa al perjudicado/lesionado del siniestro anteriormente descrito, que los datos personales suministrados voluntariamente a través del presente documento y la actualización de los mismos, serán utilizados para: El cumplimiento del propio contrato de seguro, que confiere el interés legítimo para el tratamiento de los datos La valoración de los daños ocasionados en su persona La cuantificación, en su caso, de la indemnización que le corresponda El pago, en su caso, del importe de la referida indemnización. <br>
+        Asimismo, se le informa que sus datos personales serán cedidos exclusivamente, a aquellas personas o entidades cuya intervención sea necesaria para el desarrollo de las finalidades indicadas anteriormente, así como al tomador de la póliza de seguro, sin necesidad de que le sea comunicada cada primera cesión que se efectúe a los referidos cesionarios. DARSIM BROKER, en cumplimiento con el reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo de 27 de abril de 2016 (“RGPD”) de Protección de Datos de Carácter Personal, le informa que sus datos personales obtenidos a los efectos del presente formulario, quedarán incorporados en un fichero titularidad de DARSIM BROKER. DARSIM BROKER garantiza la confidencialidad de la información a la que pueda tener acceso con motivo de la tramitación de su siniestro, especialmente los datos de salud, considerados por el RGPD como especialmente sensibles, obligación que hará extensiva a sus empleados y colaboradores. Sus datos serán conservados mientras subsista la finalidad para la cual fueron recabados y hasta el vencimiento de los plazos de prescripción de las acciones que pudieran derivarse del cumplimiento de la solicitud o el contrato. El asegurado tiene derecho a obtener información sobre el tratamiento que se realiza sobre sus datos personales, además de poder ejercitar sus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y, cuando legalmente proceda, portabilidad, mediante el envío de una petición o solicitud dirigida al responsable de protección de datos personales, esto es, DARSIM BROKER Candelaria, o a la dirección electrónica protecciondedatos@DARSIM BROKER, además de poder ponerse en contacto con el delegado de protección de datos de DARSIM BROKER a través del correo @DARSIM BROKER También tiene derecho a presentar una reclamación en España ante la Agencia Española de Protección de Datos (www.agpd.es) así como a solicitar ante dicho organismo información y tutela sobre el ejercicio de sus derechos.</p>
+        </span>
+        <button type="submit" id="submitButton" class="submit-button w-full py-4 text-white font-bold rounded-lg text-lg">
+          <span id="buttonText">Enviar Registro</span>
+          <div id="buttonSpinner" class="spinner hidden mx-auto"></div>
+        </button>
+      </form>
+      <p class="text-center text-sm text-gray-500 mt-6">* Todos los campos son obligatorios</p>
+    </div>
+{% endblock %}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Envío de Formulario</title>
+    <!-- Estilos básicos para el correo electrónico -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        a.swal2-confirm.swal2-styled {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-size: 16px;
+            color: #fff;
+            background-color: #3085d6;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a.swal2-confirm.swal2-styled:hover {
+            background-color: #2874c5;
+        }
+    </style>
+</head>
+<body>
+<p>Hola {{data.first_name}},</p>
+<p>
+Gracias por enviar el formulario. Hemos recibido su información correctamente.
+</p>
+{% if data.parte_required %}
+<p>
+Puede descargar su parte de lesiones utilizando el siguiente enlace:<br>
+<a class="swal2-confirm swal2-styled" href="{{parte_url}}" target="_blank">Descargar Parte de Lesiones</a>
+<br>
+Si no puede hacer clic en el enlace, copie y pegue la siguiente URL en su navegador:<br>
+{{parte_url}}
+</p>
+{% endif %}
+{% if data.talon_required %}
+<p>
+Puede descargar su talón de pago utilizando el siguiente enlace:<br>
+<a class="swal2-confirm swal2-styled" href="{{talon_url}}" target="_blank">Descargar Talón de Pago</a>
+<br>
+Si no puede hacer clic en el enlace, copie y pegue la siguiente URL en su navegador:<br>
+{{talon_url}}
+</p>
+{% endif %}
+<p>
+Si tiene alguna pregunta o necesita más información, no dude en ponerse en contacto con nosotros.
+</p>
+
+</body>
+</html>
+
