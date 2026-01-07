@@ -13,6 +13,10 @@ from django.http import FileResponse
 from django.utils import translation, timezone
 from django.utils.formats import date_format
 from django.template.loader import render_to_string
+import zipfile
+from pathlib import Path
+from pypdf import PdfReader, PdfWriter
+import time
 
 LOG_FILEPATH = os.path.join(settings.BASE_DIR, "debug.log")
 
@@ -53,7 +57,8 @@ class PartePDF(FPDF):
             self.cell(95, 10, f"Nombre y apellidos: {self.data.first_name} {self.data.last_name}", 1, 0, "L", fill=True)
             data_birth = self.data.birth_date.strftime("%d/%m/%Y") if self.data.birth_date else ""
             self.cell(95, 10, f"DNI y fecha de nacimiento: {self.data.nif} {data_birth}", 1, 1, "L", fill=True)
-            self.cell(190, 10, f"Domicilio, localidad y provincia: ", 1, 1, "L", fill=True)
+            location = f"{self.data.domicilio}, {self.data.localidad}, {self.data.provincia}"
+            self.cell(190, 10, f"Domicilio, localidad y provincia: {location}", 1, 1, "L", fill=True)
             # Break line x 2
             self.ln(5)
             # subtitle: Datos del accidente
@@ -64,7 +69,7 @@ class PartePDF(FPDF):
             self.set_font("Arial", "", 10)
             self.cell(95, 10, f"Fecha y hora: {self.data.incident_date.strftime('%d/%m/%Y')} {self.data.incident_time.strftime('%H:%M')}", 1, 0, "L", fill=True)
             # Actividad deportiva, manual input
-            self.cell(95, 10, f"Actividad deportiva: ", 1, 1, "L", fill=True)
+            self.cell(95, 10, f"Actividad deportiva: {self.data.incident_description}", 1, 1, "L", fill=True)
 
             # subtitle: Descripción del accidente
             self.ln(5)
@@ -73,8 +78,6 @@ class PartePDF(FPDF):
             self.ln(5)
             # description from data, multi cell
             self.set_font("Arial", "", 10)
-            self.multi_cell(0, 5, self.data.incident_description)
-            self.ln(5)
             self.multi_cell(0, 5, f"{self.data.injuries_sustained}")
             self.ln(5)
 
@@ -118,7 +121,7 @@ class PartePDF(FPDF):
             
             pos_y= (0.85 * self.h - 25)
             self.set_y(pos_y)
-            self.cell(0, 10, f"En                                         , a {date_submitted}", 0, 1, "L")
+            self.cell(0, 10, f"En {self.data.location}, a {date_submitted}", 0, 1, "C")
             self.ln(10)
             self.set_font("Arial", "", 8)
             footer_text_01 ="El firmante del presente documento se compromete a recabar el consentimiento expreso del deportista que haya sufrido las lesiones reflejadas en el presente parte, con el objeto de que sus datos se incorporen a un registro informatizado titularidad de la Federación Canaria de Triatlón e informarle que le asisten los derechos contenidos en el art. 5 de la LOPD, pudiendo ejercitarlos en cualquier momento remitiéndose al titular del fichero."
@@ -224,3 +227,130 @@ def download_talon(request, uuid):
     except Exception as e:
         log2file(show_exc(e))
         return JsonResponse({"status": "error", "message": "An error occurred while downloading the talon."}, status=500)
+
+def login_view(request):
+    try:
+        context= {}
+        if request.method == "GET":
+            return render(request, "form/login.html", context=context)
+        elif request.method == "POST":
+            if not request.user.is_authenticated:
+                username = request.POST.get("username")
+                password = request.POST.get("password")
+                # Authenticate user
+                from django.contrib.auth import authenticate, login
+                user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                    return render(request, "form/setting.html", context=context)
+                else:
+                    context["error"] = "Invalid username or password."
+            else:
+                return render(request, "form/setting.html", context=context)
+        return render(request, "form/login.html", context=context)
+    except Exception as e:
+        log2file(show_exc(e))
+        context= {"error": "An error occurred during login."}
+        return render(request, "form/login.html", context=context)
+
+def setting(request):
+    context= {}
+    if request.method == "GET":
+        if not request.user.is_authenticated:
+            return render(request, "form/login.html", context=context)
+    return render(request, "form/settings.html", context=context)
+
+def _safe_extract_zip(zip_path: Path, dest_dir: Path) -> list[str]:
+    """
+    Extrae un ZIP evitando Zip Slip (rutas como ../../etc/passwd).
+    Devuelve la lista de paths relativos extraídos.
+    """
+    extracted = []
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest_dir_resolved = dest_dir.resolve()
+
+    with zipfile.ZipFile(zip_path, "r") as zf:
+        for member in zf.infolist():
+            # Ignora entradas vacías raras
+            if not member.filename:
+                continue
+
+            # Normaliza y evita rutas absolutas y traversal
+            member_path = Path(member.filename)
+
+            # Opcional: ignora carpetas "__MACOSX" o ficheros ocultos
+            if str(member_path).startswith("__MACOSX/"):
+                continue
+
+            target_path = (dest_dir / member_path).resolve()
+
+            # Bloquea Zip Slip
+            if not str(target_path).startswith(str(dest_dir_resolved) + os.sep) and target_path != dest_dir_resolved:
+                raise ValueError(f"Ruta insegura dentro del zip: {member.filename}")
+
+            # Si es directorio, crea y sigue
+            if member.is_dir():
+                target_path.mkdir(parents=True, exist_ok=True)
+                continue
+
+            # Crea directorio padre y extrae el fichero
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            with zf.open(member, "r") as src, open(target_path, "wb") as dst:
+                dst.write(src.read())
+
+            extracted.append(str(member_path))
+
+    return extracted
+
+
+def upload_zip(request):
+    try:
+        log2file("upload_zip called")
+        zip_file = request.FILES.get("zip_file")
+        #Write file to /media/zip_uploads/
+        log2file(f"Received zip_file: {zip_file}")
+
+        zip_uploads_dir = os.path.join(settings.MEDIA_ROOT, "zip_uploads")
+        os.makedirs(zip_uploads_dir, exist_ok=True)
+        zip_path = os.path.join(zip_uploads_dir, zip_file.name)
+        with open(zip_path, "wb") as f:
+            for chunk in zip_file.chunks():
+                f.write(chunk)
+
+        extracted_files = _safe_extract_zip(Path(zip_path), Path(os.path.join(settings.MEDIA_ROOT, "uploads")))
+        for i in extracted_files:
+            # i has N pages. I wanto to divide them into separate files using PyPDF
+            log2file(f"Extracted file: {i}")
+            input_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", i)
+            reader = PdfReader(input_pdf_path)
+            for page_num in range(len(reader.pages)):
+                writer = PdfWriter()
+                writer.add_page(reader.pages[page_num])
+
+                output_pdf_name = f"talon_{int(time.time()*10000)}.pdf"
+                output_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", output_pdf_name)
+                with open(output_pdf_path, "wb") as output_pdf_file:
+                    writer.write(output_pdf_file)
+                log2file(f"Created split PDF: {output_pdf_path}")
+            os.remove(i)
+
+
+
+
+        # Unzip file in /media/uploads/
+
+        return JsonResponse({"status": "success", "message": "upload_zip called"})
+        if request.method == "POST":
+            uploaded_file = request.FILES.get("zip_file")
+            if uploaded_file:
+                # Process the uploaded zip file
+                # For now, just return a success response
+                return JsonResponse({"status": "success", "message": "Zip file uploaded successfully."})
+            else:
+                return JsonResponse({"status": "error", "message": "No file uploaded."}, status=400)
+        else:
+            return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
+    except Exception as e:
+        log2file(show_exc(e))
+        return JsonResponse({"status": "error", "message": "An error occurred while uploading the zip file."}, status=500)
+    

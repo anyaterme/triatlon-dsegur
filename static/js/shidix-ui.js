@@ -61,3 +61,34 @@ $(document).on("click", "#privacy_policy_link", function() {
         confirmButtonText: 'Cerrar'
     });
 });
+
+// Funcion que al seleccionar un archivo en el input file, envie el formulario automaticamente
+$(document).ready(function() {
+    $("#zip-file-input").on("change", function() {
+    form = $(this).closest("form");
+    // Send form with ajax and post
+    $.ajax({
+        url: form.attr("action"),
+        type: "POST",
+        data: new FormData(form[0]),
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            $("#successMessage").removeClass("hidden");
+            form[0].reset();
+            setTimeout(function() {
+                $("#successMessage").fadeOut(5000);
+            }, 2000);
+        },
+        error: function(xhr, errmsg, err) {
+            console.log("Error uploading file: " + errmsg);
+            $('#errorMessage').removeClass("hidden");
+            form[0].reset();
+            setTimeout(function() {
+                $("#errorMessage").fadeOut(5000);
+            }, 2000);
+   
+        }
+    });
+    })
+});

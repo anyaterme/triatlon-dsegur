@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-center">Talones</h2>
+    <form method="post" action="{% url 'form:upload-zip' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <main class="upload-container">
+            <input type="file" id="zip-file-input" class="file-input" accept=".zip,application/zip,application/x-zip-compressed" name="zip_file"/> 
+            <button type="button" class="upload-btn" id="upload-btn" onclick="$('#zip-file-input').click()"><span id="button-text">Cargar archivo</span> 
+            </button>
+        </main>
+        <div id="successMessage" class="hidden success-message mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded">
+            <p class="text-green-700 font-medium">✓ Archivo subido correctamente</p>
+        </div>
+        <div id="errorMessage" class="hidden error-message mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+            <p class="text-red-700 font-medium" id="error-text"><i class="fas fa-exclamation-circle"></i> Error al subir el archivo</p>
+        </div>
+    </form>
+</div>
+{% endblock %}

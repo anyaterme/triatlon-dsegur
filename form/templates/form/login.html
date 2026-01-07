@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
+    <form method="post" action="{% url 'form:settings' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Usuario</label>
+            <input type="text" id="username" name="username" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu usuario">
+        </div>
+        <div class="mb-6">
+            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Contraseña</label>
+            <input type="password" id="password" name="password" required class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg transition-all" placeholder="Ingresa tu contraseña">
+        </div>
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all">Iniciar Sesión</button>
+    </form>
+</div>
+{% endblock %}

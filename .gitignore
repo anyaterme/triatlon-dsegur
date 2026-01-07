@@ -4,3 +4,5 @@ migrations
 *.pyc
 debug.log
 local_settings.py
+*.pdf
+media
