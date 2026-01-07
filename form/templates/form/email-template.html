@@ -29,11 +29,11 @@
 <body>
 <p>Hola {{data.first_name}},</p>
 <p>
-Gracias por enviar el formulario. Hemos recibido su información correctamente.
+Hemos recibido su información correctamente.
 </p>
 {% if data.parte_required %}
 <p>
-Puede descargar su parte de lesiones utilizando el siguiente enlace:<br>
+Debe descargar su parte de lesiones utilizando el siguiente enlace:<br>
 <a class="swal2-confirm swal2-styled" href="{{parte_url}}" target="_blank">Descargar Parte de Lesiones</a>
 <br>
 Si no puede hacer clic en el enlace, copie y pegue la siguiente URL en su navegador:<br>
@@ -42,7 +42,8 @@ Si no puede hacer clic en el enlace, copie y pegue la siguiente URL en su navega
 {% endif %}
 {% if data.talon_required %}
 <p>
-Puede descargar su talón de pago utilizando el siguiente enlace:<br>
+Una vez descargado debe firmarlo y presentarlo en el centro médico concertado asignado por la compañía Asisa junto con el talón de asistencia que puede descargarse en el siguiente enlace:
+<br>
 <a class="swal2-confirm swal2-styled" href="{{talon_url}}" target="_blank">Descargar Talón de Pago</a>
 <br>
 Si no puede hacer clic en el enlace, copie y pegue la siguiente URL en su navegador:<br>
