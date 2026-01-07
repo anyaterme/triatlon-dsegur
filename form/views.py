@@ -79,6 +79,8 @@ class PartePDF(FPDF):
             self.ln(5)
             # description from data, multi cell
             self.set_font("Arial", "", 10)
+            self.multi_cell(0, 5, f"Lugar del accidente: {self.data.location}")
+            self.ln(5)
             self.multi_cell(0, 5, f"{self.data.injuries_sustained}")
             self.ln(5)
 
@@ -122,7 +124,7 @@ class PartePDF(FPDF):
             
             pos_y= (0.85 * self.h - 25)
             self.set_y(pos_y)
-            self.cell(0, 10, f"En {self.data.location}, a {date_submitted}", 0, 1, "C")
+            self.cell(0, 10, f"En {self.data.provincia}, a {date_submitted}", 0, 1, "C")
             self.ln(10)
             self.set_font("Arial", "", 8)
             footer_text_01 ="El firmante del presente documento se compromete a recabar el consentimiento expreso del deportista que haya sufrido las lesiones reflejadas en el presente parte, con el objeto de que sus datos se incorporen a un registro informatizado titularidad de la Federación Canaria de Triatlón e informarle que le asisten los derechos contenidos en el art. 5 de la LOPD, pudiendo ejercitarlos en cualquier momento remitiéndose al titular del fichero."
@@ -163,12 +165,16 @@ def save_form(request):
             form = IncidentFormForm(data)
             if form.is_valid():
                 incident_form = form.save()
+                incident_form.parte_required = True
+                incident_form.talon_required = True
+                incident_form.save()
                 if incident_form.parte_required:
                     parte_url = request.build_absolute_uri(reverse("form:download-pdf", args=[incident_form.uuid]))
 
                 if incident_form.talon_required:
                     pdf_talon_files = glob.glob(os.path.join(settings.MEDIA_ROOT, "uploads", f"talon_*.pdf"))
-                    current_talon_file = pdf_talon_files[0] if pdf_talon_files else None
+                    sorted_talon_files = sorted(pdf_talon_files)
+                    current_talon_file = sorted_talon_files[0] if sorted_talon_files else None
                     if current_talon_file:
                         talon_dest_path = os.path.join(settings.MEDIA_ROOT, "uploads", f"{incident_form.uuid}_talon.pdf")
                         os.rename(current_talon_file, talon_dest_path)

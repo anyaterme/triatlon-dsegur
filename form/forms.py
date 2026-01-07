@@ -6,7 +6,7 @@ class IncidentFormForm(forms.ModelForm):
     class Meta:
         model = IncidentForm
         fields = '__all__'
-        exclude= ['date_submitted', 'uuid', 'talon_number']
+        exclude= ['date_submitted', 'uuid', 'talon_number', 'talon_required', 'parte_required'],
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
             'date': forms.DateInput(attrs={'type': 'date'}),
