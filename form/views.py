@@ -321,7 +321,9 @@ def upload_zip(request):
                         f.write(chunk)
 
                 extracted_files = _safe_extract_zip(Path(zip_path), Path(os.path.join(settings.MEDIA_ROOT, "uploads")))
-                for i in extracted_files:
+                sorted_extracted_files = sorted(extracted_files)
+                log2file(f"Extracted files: {sorted_extracted_files}")
+                for i in sorted_extracted_files:
                     # i has N pages. I wanto to divide them into separate files using PyPDF
                     log2file(f"Extracted file: {i}")
                     input_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", i)
