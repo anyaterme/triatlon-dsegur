@@ -17,6 +17,7 @@ import zipfile
 from pathlib import Path
 from pypdf import PdfReader, PdfWriter
 import time
+import glob
 
 LOG_FILEPATH = os.path.join(settings.BASE_DIR, "debug.log")
 
@@ -166,7 +167,12 @@ def save_form(request):
                     parte_url = request.build_absolute_uri(reverse("form:download-pdf", args=[incident_form.uuid]))
 
                 if incident_form.talon_required:
-                    talon_url = request.build_absolute_uri(reverse("form:download-talon", args=[incident_form.uuid]))
+                    pdf_talon_files = glob.glob(os.path.join(settings.MEDIA_ROOT, "uploads", f"talon_*.pdf"))
+                    current_talon_file = pdf_talon_files[0] if pdf_talon_files else None
+                    if current_talon_file:
+                        talon_dest_path = os.path.join(settings.MEDIA_ROOT, "uploads", f"{incident_form.uuid}_talon.pdf")
+                        os.rename(current_talon_file, talon_dest_path)
+                    talon_url = request.build_absolute_uri("/media/uploads/" + f"{incident_form.uuid}_talon.pdf")
 
                 email_html = render_to_string("form/email-template.html", {
                     "data": incident_form,
@@ -201,14 +207,8 @@ def generate_pdf(request, uuid):
             pdf_parte = PartePDF(incident_form)
             pdf_content = pdf_parte.build()
             response = HttpResponse(pdf_content, content_type="application/pdf")
-            # Open in line in browser
             response["Content-Disposition"] = f'inline; filename="parte_incidente_{form_uuid}.pdf"'
             return response
-
-            # bio = BytesIO(pdf_content)
-            # bio.seek(0)
-            # response = FileResponse(bio, as_attachment=True, filename=f"parte_incidente_{form_uuid}.pdf", content_type="application/pdf")
-            # return response
         else:
             return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
     except Exception as e:
@@ -306,46 +306,37 @@ def _safe_extract_zip(zip_path: Path, dest_dir: Path) -> list[str]:
 def upload_zip(request):
     try:
         log2file("upload_zip called")
-        zip_file = request.FILES.get("zip_file")
-        #Write file to /media/zip_uploads/
-        log2file(f"Received zip_file: {zip_file}")
-
-        zip_uploads_dir = os.path.join(settings.MEDIA_ROOT, "zip_uploads")
-        os.makedirs(zip_uploads_dir, exist_ok=True)
-        zip_path = os.path.join(zip_uploads_dir, zip_file.name)
-        with open(zip_path, "wb") as f:
-            for chunk in zip_file.chunks():
-                f.write(chunk)
-
-        extracted_files = _safe_extract_zip(Path(zip_path), Path(os.path.join(settings.MEDIA_ROOT, "uploads")))
-        for i in extracted_files:
-            # i has N pages. I wanto to divide them into separate files using PyPDF
-            log2file(f"Extracted file: {i}")
-            input_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", i)
-            reader = PdfReader(input_pdf_path)
-            for page_num in range(len(reader.pages)):
-                writer = PdfWriter()
-                writer.add_page(reader.pages[page_num])
-
-                output_pdf_name = f"talon_{int(time.time()*10000)}.pdf"
-                output_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", output_pdf_name)
-                with open(output_pdf_path, "wb") as output_pdf_file:
-                    writer.write(output_pdf_file)
-                log2file(f"Created split PDF: {output_pdf_path}")
-            os.remove(i)
-
-
-
-
-        # Unzip file in /media/uploads/
-
-        return JsonResponse({"status": "success", "message": "upload_zip called"})
         if request.method == "POST":
-            uploaded_file = request.FILES.get("zip_file")
-            if uploaded_file:
-                # Process the uploaded zip file
-                # For now, just return a success response
-                return JsonResponse({"status": "success", "message": "Zip file uploaded successfully."})
+            if request.FILES.get("zip_file"):
+                zip_file = request.FILES.get("zip_file")
+                
+                #Write file to /media/zip_uploads/
+                log2file(f"Received zip_file: {zip_file}")
+
+                zip_uploads_dir = os.path.join(settings.MEDIA_ROOT, "zip_uploads")
+                os.makedirs(zip_uploads_dir, exist_ok=True)
+                zip_path = os.path.join(zip_uploads_dir, zip_file.name)
+                with open(zip_path, "wb") as f:
+                    for chunk in zip_file.chunks():
+                        f.write(chunk)
+
+                extracted_files = _safe_extract_zip(Path(zip_path), Path(os.path.join(settings.MEDIA_ROOT, "uploads")))
+                for i in extracted_files:
+                    # i has N pages. I wanto to divide them into separate files using PyPDF
+                    log2file(f"Extracted file: {i}")
+                    input_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", i)
+                    reader = PdfReader(input_pdf_path)
+                    for page_num in range(len(reader.pages)):
+                        writer = PdfWriter()
+                        writer.add_page(reader.pages[page_num])
+
+                        output_pdf_name = f"talon_{int(time.time()*10000)}.pdf"
+                        output_pdf_path = os.path.join(settings.MEDIA_ROOT, "uploads", output_pdf_name)
+                        with open(output_pdf_path, "wb") as output_pdf_file:
+                            writer.write(output_pdf_file)
+                        log2file(f"Created split PDF: {output_pdf_path}")
+                    os.remove(input_pdf_path)
+                return JsonResponse({"status": "success", "message": "Zip file uploaded and processed successfully."})
             else:
                 return JsonResponse({"status": "error", "message": "No file uploaded."}, status=400)
         else:

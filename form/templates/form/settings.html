@@ -3,7 +3,7 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+<div class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-md">
     <h2 class="text-2xl font-bold mb-6 text-center">Talones</h2>
     <form method="post" action="{% url 'form:upload-zip' %}" enctype="multipart/form-data">
         {% csrf_token %}

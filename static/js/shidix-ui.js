@@ -77,7 +77,7 @@ $(document).ready(function() {
             $("#successMessage").removeClass("hidden");
             form[0].reset();
             setTimeout(function() {
-                $("#successMessage").fadeOut(5000);
+                $("#successMessage").addClass("hidden");
             }, 2000);
         },
         error: function(xhr, errmsg, err) {
@@ -85,7 +85,7 @@ $(document).ready(function() {
             $('#errorMessage').removeClass("hidden");
             form[0].reset();
             setTimeout(function() {
-                $("#errorMessage").fadeOut(5000);
+                $("#errorMessage").addClass("hidden");
             }, 2000);
    
         }
